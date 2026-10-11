@@ -1,0 +1,10 @@
+{
+  "name": "Remix Qatar QND95 / WGS84 Coordinate Converter \u0026 Map",
+  "description": "Bi-directional coordinate converter between WGS84 (DD \u0026 DMS) and QND95 (Qatar National Grid) with interactive Satellite and OpenStreetMap views.",
+  "requestFramePermissions": [
+    "geolocation"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

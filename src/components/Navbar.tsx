@@ -6,11 +6,16 @@ import {
   ExternalLink,
 } from 'lucide-react';
 
+import { AppLanguage } from '../types/settings';
+import { getTranslation } from '../utils/i18n';
+
+export type AppTab = 'converter' | 'map' | 'batch' | 'settings';
+
 interface NavbarProps {
-  activeTab?: 'converter' | 'map';
-  onSelectTab?: (tab: 'converter' | 'map') => void;
-  isDarkMode?: boolean;
-  onToggleDarkMode?: () => void;
+  activeTab: AppTab;
+  onSelectTab: (tab: AppTab) => void;
+  language: AppLanguage;
+  onToggleLanguage?: () => void;
 }
 
 /**
@@ -179,43 +184,109 @@ export const QatarCompassLogo: React.FC<{ className?: string }> = ({ className =
   );
 };
 
-export const Navbar: React.FC<NavbarProps> = () => {
+export const Navbar: React.FC<NavbarProps> = ({
+  activeTab,
+  onSelectTab,
+  language,
+  onToggleLanguage,
+}) => {
   const [showInfoModal, setShowInfoModal] = useState<boolean>(false);
+  const t = getTranslation(language);
 
   return (
     <>
       <header className="sticky top-0 z-50 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t-2 border-t-[#8A1538] border-b border-slate-200 dark:border-slate-800 transition-colors">
-        <div className="max-w-4xl mx-auto px-3 sm:px-4 min-h-12 py-1.5 flex items-center justify-between">
+        <div className="max-w-5xl mx-auto px-2.5 sm:px-4 min-h-11 py-1 flex items-center justify-between gap-2">
           {/* Brand & Title */}
-          <div className="flex items-center gap-2 sm:gap-2.5">
+          <div className="flex items-center gap-2 sm:gap-2.5 min-w-0">
             {/* Circle Compass inside Qatar Map Logo */}
-            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full p-0.5 bg-gradient-to-tr from-amber-400 via-[#8A1538] to-[#5A0B22] flex items-center justify-center shadow-xs shadow-[#8A1538]/25 shrink-0 transition-transform hover:scale-105">
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full p-0.5 bg-gradient-to-tr from-amber-400 via-[#8A1538] to-[#5A0B22] flex items-center justify-center shadow-xs shadow-[#8A1538]/25 shrink-0 transition-transform hover:scale-105">
               <QatarCompassLogo className="w-full h-full" />
             </div>
 
             {/* Title & Geodetic Reference */}
-            <div className="flex flex-col justify-center">
-              <span className="font-black text-xs sm:text-sm tracking-wide text-slate-900 dark:text-white uppercase select-none leading-tight">
-                QATAR COORDINATES CONVERTER
+            <div className="flex flex-col justify-center min-w-0">
+              <span className="font-black text-xs sm:text-sm tracking-wide text-slate-900 dark:text-white uppercase select-none leading-tight truncate">
+                {t.appTitle}
               </span>
 
               {/* Subtitle / Geodetic Reference */}
               <div className="flex items-center">
-                <span className="text-[10px] sm:text-[10.5px] font-medium text-slate-500 dark:text-slate-400 leading-tight line-clamp-1">
-                  Bi-directional conversions between WGS84 (DD / DMS) and Qatar National Grid (QND95 - EPSG:2932)
+                <span className="text-[9.5px] sm:text-[10.5px] font-medium text-slate-500 dark:text-slate-400 leading-tight line-clamp-1">
+                  {t.appSubtitle}
                 </span>
               </div>
             </div>
           </div>
 
+          {/* Desktop/Tablet Tab Navigation Pills */}
+          <div className="hidden md:flex items-center p-0.5 bg-slate-100 dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 text-xs font-semibold">
+            <button
+              type="button"
+              onClick={() => onSelectTab('converter')}
+              className={`px-2.5 py-1 rounded-md transition-all cursor-pointer ${
+                activeTab === 'converter'
+                  ? 'bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-2xs font-bold'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+              }`}
+            >
+              {t.tabConverter}
+            </button>
+            <button
+              type="button"
+              onClick={() => onSelectTab('map')}
+              className={`px-2.5 py-1 rounded-md transition-all cursor-pointer ${
+                activeTab === 'map'
+                  ? 'bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-2xs font-bold'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+              }`}
+            >
+              {t.tabMap}
+            </button>
+            <button
+              type="button"
+              onClick={() => onSelectTab('batch')}
+              className={`px-2.5 py-1 rounded-md transition-all cursor-pointer ${
+                activeTab === 'batch'
+                  ? 'bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-2xs font-bold'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+              }`}
+            >
+              {t.tabBatch}
+            </button>
+            <button
+              type="button"
+              onClick={() => onSelectTab('settings')}
+              className={`px-2.5 py-1 rounded-md transition-all cursor-pointer ${
+                activeTab === 'settings'
+                  ? 'bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-2xs font-bold'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+              }`}
+            >
+              {t.tabSettings}
+            </button>
+          </div>
+
           {/* Utility Action Buttons */}
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1 shrink-0">
+            {/* Quick Language Toggle */}
+            {onToggleLanguage && (
+              <button
+                type="button"
+                onClick={onToggleLanguage}
+                title="Switch Language / تغيير اللغة"
+                className="px-2 py-0.5 rounded-lg text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 transition-colors cursor-pointer"
+              >
+                {language === 'en' ? 'عربي' : 'EN'}
+              </button>
+            )}
+
             {/* Info Button */}
             <button
               type="button"
               onClick={() => setShowInfoModal(true)}
               title="Geodetic Specifications & Information"
-              className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+              className="w-7 h-7 rounded-lg flex items-center justify-center text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
             >
               <Info className="w-3.5 h-3.5" />
             </button>
@@ -225,14 +296,14 @@ export const Navbar: React.FC<NavbarProps> = () => {
 
       {/* Geodetic Information Modal */}
       {showInfoModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in">
-          <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4 max-h-[85vh] overflow-y-auto">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-xs animate-in fade-in">
+          <div className="bg-white dark:bg-slate-900 rounded-xl sm:rounded-2xl max-w-lg w-full p-3.5 sm:p-5 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-3 max-h-[85vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-2 border-b border-slate-200 dark:border-slate-800">
               <div className="flex items-center gap-2">
-                <div className="w-6 h-6 rounded-full overflow-hidden shrink-0">
+                <div className="w-5 h-5 rounded-full overflow-hidden shrink-0">
                   <QatarCompassLogo className="w-full h-full" />
                 </div>
-                <h3 className="font-bold text-base text-slate-900 dark:text-slate-100">
+                <h3 className="font-bold text-sm sm:text-base text-slate-900 dark:text-slate-100">
                   QND95 Geodetic Specifications
                 </h3>
               </div>

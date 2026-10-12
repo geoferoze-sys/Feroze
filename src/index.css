@@ -51,3 +51,24 @@
 .cursor-crosshair-map {
   cursor: crosshair !important;
 }
+
+/* Map credentials & attribution styling */
+.leaflet-control-attribution {
+  background: rgba(255, 255, 255, 0.82) !important;
+  backdrop-filter: blur(4px);
+  padding: 1px 6px !important;
+  border-top-left-radius: 4px;
+  font-size: 10px !important;
+  line-height: 1.4 !important;
+}
+
+.dark .leaflet-control-attribution {
+  background: rgba(15, 23, 42, 0.88) !important;
+  color: #94a3b8 !important;
+  border-top: 1px solid rgba(51, 65, 85, 0.4);
+  border-left: 1px solid rgba(51, 65, 85, 0.4);
+}
+
+.dark .leaflet-control-attribution a {
+  color: #38bdf8 !important;
+}

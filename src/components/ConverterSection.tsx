@@ -228,7 +228,10 @@ export const ConverterSection: React.FC<ConverterSectionProps> = ({
   const visibleOfficialPresets = QATAR_PRESETS.filter(
     (preset) => !removedPresetIds.includes(preset.id)
   );
-  const allPresets: QatarLocationPreset[] = [...userCustomPresets, ...visibleOfficialPresets];
+  const sortedOfficialPresets = [...visibleOfficialPresets].sort((a, b) =>
+    a.name.localeCompare(b.name, 'en', { sensitivity: 'base' })
+  );
+  const allPresets: QatarLocationPreset[] = [...userCustomPresets, ...sortedOfficialPresets];
   const activeSelectedPreset = allPresets.find((p) => p.id === selectedPresetId);
 
   const handleSelectPreset = (presetId: string) => {
@@ -582,25 +585,25 @@ export const ConverterSection: React.FC<ConverterSectionProps> = ({
   };
 
   return (
-    <div className="space-y-3 pb-2">
+    <div className="space-y-2 sm:space-y-2.5 pb-2">
       {/* Preset Locations Drop List & Search/Add Locations by User */}
-      <div className="bg-white dark:bg-slate-900 rounded-xl p-3 shadow-2xs border border-slate-200 dark:border-slate-800 space-y-2">
+      <div className="bg-white dark:bg-slate-900 rounded-xl p-2.5 sm:p-3 shadow-2xs border border-slate-200 dark:border-slate-800 space-y-1.5 sm:space-y-2">
         {/* Header with Title and Add/Search Button */}
-        <div className="flex flex-wrap items-center justify-between gap-1.5">
+        <div className="flex flex-wrap items-center justify-between gap-1">
           <div className="flex items-center gap-1.5">
-            <div className="w-6 h-6 rounded-md bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center">
-              <Sparkles className="w-3.5 h-3.5" />
+            <div className="w-5 h-5 rounded-md bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center">
+              <Sparkles className="w-3 h-3" />
             </div>
             <div>
               <div className="flex items-center gap-1.5">
-                <span className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200">
+                <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200">
                   Preset Locations
                 </span>
-                <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-medium">
+                <span className="text-[9.5px] px-1.5 py-0.2 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-medium">
                   {allPresets.length} available
                 </span>
               </div>
-              <p className="text-[10.5px] text-slate-400 dark:text-slate-500 leading-tight">
+              <p className="text-[10px] text-slate-400 dark:text-slate-500 leading-tight">
                 Choose landmark presets or add custom searched places
               </p>
             </div>
@@ -637,23 +640,26 @@ export const ConverterSection: React.FC<ConverterSectionProps> = ({
           <select
             value={selectedPresetId}
             onChange={(e) => handleSelectPreset(e.target.value)}
-            className="w-full h-9 pl-3 pr-8 text-xs font-medium rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 appearance-none cursor-pointer transition-all"
+            className="w-full h-8 sm:h-8.5 pl-2.5 pr-8 text-xs font-medium rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 appearance-none cursor-pointer transition-all"
           >
             <option value="">-- Choose a Preset Location to Load into Converter --</option>
             {userCustomPresets.length > 0 && (
               <optgroup label="📍 User Added & Searched Locations">
-                {userCustomPresets.map((preset) => (
-                  <option key={preset.id} value={preset.id}>
-                    ⭐ {preset.name} [{preset.category || 'User'}]
-                  </option>
-                ))}
+                {userCustomPresets
+                  .slice()
+                  .sort((a, b) => a.name.localeCompare(b.name, 'en', { sensitivity: 'base' }))
+                  .map((preset) => (
+                    <option key={preset.id} value={preset.id}>
+                      ⭐ {preset.name}{preset.nameAr ? ` (${preset.nameAr})` : ''}
+                    </option>
+                  ))}
               </optgroup>
             )}
-            {visibleOfficialPresets.length > 0 && (
-              <optgroup label="🇶🇦 Official Qatar Benchmark Landmarks">
-                {visibleOfficialPresets.map((preset) => (
+            {sortedOfficialPresets.length > 0 && (
+              <optgroup label="🇶🇦 Places in Qatar (A–Z)">
+                {sortedOfficialPresets.map((preset) => (
                   <option key={preset.id} value={preset.id}>
-                    {preset.name} ({preset.category})
+                    {preset.name}{preset.nameAr ? ` (${preset.nameAr})` : ''}
                   </option>
                 ))}
               </optgroup>
@@ -666,28 +672,28 @@ export const ConverterSection: React.FC<ConverterSectionProps> = ({
 
         {/* Active Selected Preset Details Card */}
         {activeSelectedPreset && (
-          <div className="p-3 rounded-lg bg-blue-50/60 dark:bg-slate-850 border border-blue-100 dark:border-slate-750 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 text-xs">
+          <div className="p-2 sm:p-2.5 rounded-lg bg-blue-50/60 dark:bg-slate-850 border border-blue-100 dark:border-slate-750 flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-2 text-xs">
             <div className="space-y-0.5">
-              <div className="flex items-center gap-2">
-                <MapPin className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400 shrink-0" />
-                <span className="font-bold text-slate-900 dark:text-slate-100">
+              <div className="flex items-center gap-1.5 flex-wrap">
+                <MapPin className="w-3 h-3 text-blue-600 dark:text-blue-400 shrink-0" />
+                <span className="font-bold text-slate-900 dark:text-slate-100 text-[11px] sm:text-xs">
                   {activeSelectedPreset.name}
                 </span>
-                <span className="text-[10px] px-1.5 py-0.2 rounded bg-blue-100 dark:bg-blue-900/60 text-blue-700 dark:text-blue-300 font-medium">
+                <span className="text-[9.5px] px-1.5 py-0.2 rounded bg-blue-100 dark:bg-blue-900/60 text-blue-700 dark:text-blue-300 font-medium">
                   {activeSelectedPreset.category}
                 </span>
                 {activeSelectedPreset.isCustom && (
-                  <span className="text-[10px] px-1.5 py-0.2 rounded bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 font-medium">
+                  <span className="text-[9.5px] px-1.5 py-0.2 rounded bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 font-medium">
                     User Saved
                   </span>
                 )}
               </div>
-              <p className="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-1">
+              <p className="text-[10.5px] text-slate-500 dark:text-slate-400 line-clamp-1">
                 {activeSelectedPreset.description}
               </p>
             </div>
 
-            <div className="flex items-center gap-1.5 shrink-0">
+            <div className="flex items-center gap-1 shrink-0">
               <button
                 type="button"
                 onClick={() => {
@@ -695,7 +701,7 @@ export const ConverterSection: React.FC<ConverterSectionProps> = ({
                   applyPresetToQnd(activeSelectedPreset);
                   showToast(`Reloaded ${activeSelectedPreset.name}`);
                 }}
-                className="px-2.5 py-1 rounded-md bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-100 border border-slate-200 dark:border-slate-700 text-xs font-medium cursor-pointer shadow-2xs"
+                className="px-2 py-0.5 rounded-md bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-100 border border-slate-200 dark:border-slate-700 text-[11px] font-medium cursor-pointer shadow-2xs"
               >
                 Reload
               </button>
@@ -708,7 +714,7 @@ export const ConverterSection: React.FC<ConverterSectionProps> = ({
                     activeSelectedPreset.name
                   )
                 }
-                className="px-2.5 py-1 rounded-md bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium cursor-pointer shadow-2xs"
+                className="px-2 py-0.5 rounded-md bg-blue-600 hover:bg-blue-700 text-white text-[11px] font-medium cursor-pointer shadow-2xs"
               >
                 Map
               </button>
@@ -718,7 +724,7 @@ export const ConverterSection: React.FC<ConverterSectionProps> = ({
                 title={`Delete "${activeSelectedPreset.name}" from presets`}
                 className="p-1 rounded-md text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40 border border-transparent hover:border-rose-200 dark:hover:border-rose-900 transition-colors cursor-pointer"
               >
-                <Trash2 className="w-3.5 h-3.5" />
+                <Trash2 className="w-3 h-3" />
               </button>
             </div>
           </div>
@@ -734,19 +740,19 @@ export const ConverterSection: React.FC<ConverterSectionProps> = ({
 
         {/* Modal: Add & Search Location by User */}
         {showAddModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in">
-            <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-lg w-full p-5 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4 max-h-[90vh] overflow-y-auto">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-xs animate-in fade-in">
+            <div className="bg-white dark:bg-slate-900 rounded-xl sm:rounded-2xl max-w-lg w-full p-3.5 sm:p-5 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-3 max-h-[90vh] overflow-y-auto">
               {/* Modal Header */}
-              <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+              <div className="flex items-center justify-between pb-2 border-b border-slate-200 dark:border-slate-800">
                 <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-lg bg-blue-600 text-white flex items-center justify-center">
-                    <Search className="w-4 h-4" />
+                  <div className="w-7 h-7 rounded-lg bg-blue-600 text-white flex items-center justify-center">
+                    <Search className="w-3.5 h-3.5" />
                   </div>
                   <div>
-                    <h3 className="font-bold text-sm text-slate-900 dark:text-slate-100">
+                    <h3 className="font-bold text-xs sm:text-sm text-slate-900 dark:text-slate-100">
                       Add Location to Presets
                     </h3>
-                    <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                    <p className="text-[10.5px] text-slate-500 dark:text-slate-400">
                       Search any Qatar place or save currently entered coordinates
                     </p>
                   </div>
@@ -761,11 +767,11 @@ export const ConverterSection: React.FC<ConverterSectionProps> = ({
               </div>
 
               {/* Modal Mode Tabs */}
-              <div className="flex items-center gap-1 p-1 bg-slate-100 dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700">
+              <div className="flex items-center gap-1 p-0.5 bg-slate-100 dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700">
                 <button
                   type="button"
                   onClick={() => setActiveModalTab('search')}
-                  className={`flex-1 py-1.5 text-xs font-semibold rounded-md transition-all ${
+                  className={`flex-1 py-1 text-xs font-semibold rounded-md transition-all ${
                     activeModalTab === 'search'
                       ? 'bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-xs'
                       : 'text-slate-600 dark:text-slate-400'
@@ -1053,23 +1059,21 @@ export const ConverterSection: React.FC<ConverterSectionProps> = ({
       {/* UNIFIED CONVERTER FRAME: User selects either WGS84-QND95 or QND95-WGS84 */}
       <div className="bg-white dark:bg-slate-900 rounded-xl shadow-2xs border border-slate-200 dark:border-slate-800 overflow-hidden">
         {/* Frame Direction Switcher Header */}
-        <div className="px-3.5 py-2 bg-gradient-to-r from-slate-50 via-blue-50/20 to-slate-50 dark:from-slate-850 dark:via-slate-800 dark:to-slate-850 border-b border-slate-200 dark:border-slate-800">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+        <div className="px-2.5 sm:px-3 py-1.5 bg-gradient-to-r from-slate-50 via-blue-50/20 to-slate-50 dark:from-slate-850 dark:via-slate-800 dark:to-slate-850 border-b border-slate-200 dark:border-slate-800">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5">
             <div>
-              <div className="flex items-center gap-1.5">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                  Conversion Direction
-                </span>
-              </div>
+              <span className="text-[10.5px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                Conversion Direction
+              </span>
             </div>
 
-            {/* Segmented Direction Selector Buttons + Swap Button */}
+            {/* Segmented Direction Selector Buttons */}
             <div className="flex items-center gap-1.5 self-start sm:self-auto">
               <div className="flex items-center p-0.5 bg-slate-200/80 dark:bg-slate-800 rounded-lg border border-slate-300/80 dark:border-slate-700">
                 <button
                   type="button"
                   onClick={() => setConversionMode('WGS_TO_QND')}
-                  className={`flex items-center gap-1 px-3 py-1 rounded-md text-xs font-bold transition-all cursor-pointer ${
+                  className={`flex items-center gap-1 px-2.5 py-0.5 sm:py-1 rounded-md text-xs font-bold transition-all cursor-pointer ${
                     conversionMode === 'WGS_TO_QND'
                       ? 'bg-blue-600 text-white shadow-2xs'
                       : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
@@ -1083,7 +1087,7 @@ export const ConverterSection: React.FC<ConverterSectionProps> = ({
                 <button
                   type="button"
                   onClick={() => setConversionMode('QND_TO_WGS')}
-                  className={`flex items-center gap-1 px-3 py-1 rounded-md text-xs font-bold transition-all cursor-pointer ${
+                  className={`flex items-center gap-1 px-2.5 py-0.5 sm:py-1 rounded-md text-xs font-bold transition-all cursor-pointer ${
                     conversionMode === 'QND_TO_WGS'
                       ? 'bg-emerald-600 text-white shadow-2xs'
                       : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
@@ -1094,36 +1098,26 @@ export const ConverterSection: React.FC<ConverterSectionProps> = ({
                   <span>WGS84</span>
                 </button>
               </div>
-
-              {/* Swap Button */}
-              <button
-                type="button"
-                onClick={handleSwapDirection}
-                title="Swap Direction and Transfer Current Coordinates"
-                className="p-1.5 rounded-lg bg-white hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-750 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 shadow-2xs transition-all cursor-pointer active:scale-95"
-              >
-                <ArrowUpDown className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
-              </button>
             </div>
           </div>
         </div>
 
         {/* Content of the Active Direction */}
         {conversionMode === 'WGS_TO_QND' ? (
-          <div className="p-3.5 sm:p-4 space-y-2.5">
+          <div className="p-2.5 sm:p-3.5 space-y-2">
             {/* Format Selector: DD vs DMS & GPS button */}
-            <div className="flex items-center justify-between pb-0.5 flex-wrap gap-2">
-              <div className="flex items-center gap-2">
-                <span className="text-[11px] font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
-                  Input Format
+            <div className="flex items-center justify-between pb-0.5 flex-wrap gap-1.5">
+              <div className="flex items-center gap-1.5">
+                <span className="text-[10.5px] font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+                  Format
                 </span>
-                <div className="flex items-center gap-0.5 p-0.5 bg-slate-100 dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700">
+                <div className="flex items-center gap-0.5 p-0.5 bg-slate-100 dark:bg-slate-800 rounded-md border border-slate-200 dark:border-slate-700">
                   <button
                     type="button"
                     onClick={() => handleToggleWgsFormat('DD')}
-                    className={`px-2.5 py-0.5 text-xs font-medium rounded-md transition-all ${
+                    className={`px-2 py-0.5 text-[11px] font-medium rounded transition-all ${
                       wgsInputFormat === 'DD'
-                        ? 'bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-2xs'
+                        ? 'bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-2xs font-semibold'
                         : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
                     }`}
                   >
@@ -1132,9 +1126,9 @@ export const ConverterSection: React.FC<ConverterSectionProps> = ({
                   <button
                     type="button"
                     onClick={() => handleToggleWgsFormat('DMS')}
-                    className={`px-2.5 py-0.5 text-xs font-medium rounded-md transition-all ${
+                    className={`px-2 py-0.5 text-[11px] font-medium rounded transition-all ${
                       wgsInputFormat === 'DMS'
-                        ? 'bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-2xs'
+                        ? 'bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-2xs font-semibold'
                         : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
                     }`}
                   >
@@ -1149,21 +1143,21 @@ export const ConverterSection: React.FC<ConverterSectionProps> = ({
                 onClick={handleGetDeviceLocation}
                 disabled={isLocating}
                 title="Use current GPS location"
-                className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-750 shadow-2xs active:scale-95 transition-all cursor-pointer"
+                className="flex items-center gap-1 px-2 py-0.5 text-xs font-medium rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-750 shadow-2xs active:scale-95 transition-all cursor-pointer"
               >
-                <Navigation className={`w-3.5 h-3.5 text-blue-600 ${isLocating ? 'animate-spin' : ''}`} />
+                <Navigation className={`w-3 h-3 text-blue-600 ${isLocating ? 'animate-spin' : ''}`} />
                 <span className="hidden sm:inline">{isLocating ? 'Acquiring...' : 'My GPS'}</span>
               </button>
             </div>
 
             {/* Conditional Input UI: DD vs DMS */}
             {wgsInputFormat === 'DD' ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {/* Latitude */}
-                <div className="space-y-1">
-                  <label className="flex items-center justify-between text-xs font-medium text-slate-700 dark:text-slate-300">
+                <div className="space-y-0.5">
+                  <label className="flex items-center justify-between text-[11px] sm:text-xs font-medium text-slate-700 dark:text-slate-300">
                     <span>Latitude (°N / °S)</span>
-                    <span className="text-[10.5px] text-slate-400 font-mono">e.g. 25.285400</span>
+                    <span className="text-[10px] text-slate-400 font-mono">e.g. 25.285400</span>
                   </label>
                   <div className="relative">
                     <input
@@ -1173,19 +1167,19 @@ export const ConverterSection: React.FC<ConverterSectionProps> = ({
                       value={wgsLatDD}
                       onChange={(e) => setWgsLatDD(e.target.value)}
                       placeholder="25.285400"
-                      className="w-full h-9 px-3 text-xs sm:text-sm font-mono font-medium rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all"
+                      className="w-full h-8 sm:h-8.5 px-2.5 text-xs font-mono font-medium rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all"
                     />
-                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400 font-mono">
+                    <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-slate-400 font-mono">
                       °
                     </span>
                   </div>
                 </div>
 
                 {/* Longitude */}
-                <div className="space-y-1">
-                  <label className="flex items-center justify-between text-xs font-medium text-slate-700 dark:text-slate-300">
+                <div className="space-y-0.5">
+                  <label className="flex items-center justify-between text-[11px] sm:text-xs font-medium text-slate-700 dark:text-slate-300">
                     <span>Longitude (°E / °W)</span>
-                    <span className="text-[10.5px] text-slate-400 font-mono">e.g. 51.531000</span>
+                    <span className="text-[10px] text-slate-400 font-mono">e.g. 51.531000</span>
                   </label>
                   <div className="relative">
                     <input
@@ -1195,16 +1189,16 @@ export const ConverterSection: React.FC<ConverterSectionProps> = ({
                       value={wgsLngDD}
                       onChange={(e) => setWgsLngDD(e.target.value)}
                       placeholder="51.531000"
-                      className="w-full h-9 px-3 text-xs sm:text-sm font-mono font-medium rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all"
+                      className="w-full h-8 sm:h-8.5 px-2.5 text-xs font-mono font-medium rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all"
                     />
-                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400 font-mono">
+                    <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-slate-400 font-mono">
                       °
                     </span>
                   </div>
                 </div>
               </div>
             ) : (
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 <DmsInput
                   label="Latitude (Degrees, Minutes, Seconds)"
                   isLat={true}
@@ -1222,7 +1216,7 @@ export const ConverterSection: React.FC<ConverterSectionProps> = ({
 
             {/* Validation error if any */}
             {wgsToQndError && (
-              <div className="flex items-center gap-1.5 p-2 rounded-lg bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900 text-rose-700 dark:rose-300 text-xs">
+              <div className="flex items-center gap-1.5 p-1.5 rounded-lg bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900 text-rose-700 dark:rose-300 text-xs">
                 <AlertTriangle className="w-3.5 h-3.5 shrink-0 text-rose-500" />
                 <span>{wgsToQndError}</span>
               </div>
@@ -1233,19 +1227,19 @@ export const ConverterSection: React.FC<ConverterSectionProps> = ({
               <button
                 type="button"
                 onClick={handleConvertWgsToQnd}
-                className="w-full h-10 flex items-center justify-center gap-1.5 px-3 rounded-lg bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-semibold text-xs sm:text-sm shadow-2xs transition-all cursor-pointer active:scale-[0.99]"
+                className="w-full h-8.5 sm:h-9 flex items-center justify-center gap-1.5 px-3 rounded-lg bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-semibold text-xs sm:text-sm shadow-2xs transition-all cursor-pointer active:scale-[0.99]"
               >
-                <Compass className="w-4 h-4" />
+                <Compass className="w-3.5 h-3.5" />
                 <span>Convert to QND95 (Qatar National Grid)</span>
               </button>
             </div>
 
             {/* Separate Output Display 1 */}
             {qndOutput && (
-              <div className="mt-2.5 p-3 rounded-xl bg-slate-50 dark:bg-slate-850 border border-slate-200 dark:border-slate-750 space-y-2">
+              <div className="mt-2 p-2.5 sm:p-3 rounded-xl bg-slate-50 dark:bg-slate-850 border border-slate-200 dark:border-slate-750 space-y-1.5 sm:space-y-2">
                 <div className="flex items-center justify-between pb-1 border-b border-slate-200/80 dark:border-slate-700/80">
-                  <span className="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300 flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full bg-blue-500 inline-block"></span>
+                  <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300 flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-blue-500 inline-block"></span>
                     QND95 Grid Result (EPSG:2932)
                   </span>
                   <button
@@ -1256,7 +1250,7 @@ export const ConverterSection: React.FC<ConverterSectionProps> = ({
                         'qnd-combined'
                       )
                     }
-                    className="flex items-center gap-1 text-xs font-medium text-blue-600 dark:text-blue-400 hover:underline cursor-pointer"
+                    className="flex items-center gap-1 text-[11px] font-medium text-blue-600 dark:text-blue-400 hover:underline cursor-pointer"
                   >
                     {copiedKey === 'qnd-combined' ? (
                       <>
@@ -1273,10 +1267,10 @@ export const ConverterSection: React.FC<ConverterSectionProps> = ({
                 </div>
 
                 {/* Coordinates Grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   {/* Easting */}
-                  <div className="p-2.5 bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800">
-                    <div className="flex items-center justify-between text-xs text-[#8A1538] dark:text-[#F43F5E] mb-0.5">
+                  <div className="p-2 sm:p-2.5 bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800">
+                    <div className="flex items-center justify-between text-[11px] text-[#8A1538] dark:text-[#F43F5E] mb-0.5">
                       <span className="font-semibold text-[#8A1538] dark:text-[#fda4af]">Easting (X)</span>
                       <button
                         type="button"
@@ -1293,15 +1287,15 @@ export const ConverterSection: React.FC<ConverterSectionProps> = ({
                         )}
                       </button>
                     </div>
-                    <div className="text-base sm:text-lg font-mono font-bold text-[#8A1538] dark:text-[#f43f5e]">
+                    <div className="text-sm sm:text-base font-mono font-bold text-[#8A1538] dark:text-[#f43f5e]">
                       {qndOutput.formattedEasting}{' '}
-                      <span className="text-xs font-normal text-[#8A1538]/80 dark:text-[#fda4af]/80">m</span>
+                      <span className="text-[11px] font-normal text-[#8A1538]/80 dark:text-[#fda4af]/80">m</span>
                     </div>
                   </div>
 
                   {/* Northing */}
-                  <div className="p-2.5 bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800">
-                    <div className="flex items-center justify-between text-xs text-[#8A1538] dark:text-[#F43F5E] mb-0.5">
+                  <div className="p-2 sm:p-2.5 bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800">
+                    <div className="flex items-center justify-between text-[11px] text-[#8A1538] dark:text-[#F43F5E] mb-0.5">
                       <span className="font-semibold text-[#8A1538] dark:text-[#fda4af]">Northing (Y)</span>
                       <button
                         type="button"
@@ -1318,16 +1312,16 @@ export const ConverterSection: React.FC<ConverterSectionProps> = ({
                         )}
                       </button>
                     </div>
-                    <div className="text-base sm:text-lg font-mono font-bold text-[#8A1538] dark:text-[#f43f5e]">
+                    <div className="text-sm sm:text-base font-mono font-bold text-[#8A1538] dark:text-[#f43f5e]">
                       {qndOutput.formattedNorthing}{' '}
-                      <span className="text-xs font-normal text-[#8A1538]/80 dark:text-[#fda4af]/80">m</span>
+                      <span className="text-[11px] font-normal text-[#8A1538]/80 dark:text-[#fda4af]/80">m</span>
                     </div>
                   </div>
                 </div>
 
                 {/* Qatar Bounds Notice */}
                 {wgsConvertedInput && !isWithinQatarBounds(wgsConvertedInput.lat, wgsConvertedInput.lng) && (
-                  <div className="flex items-center gap-1.5 p-2 rounded-lg bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 text-amber-700 dark:text-amber-300 text-xs">
+                  <div className="flex items-center gap-1.5 p-1.5 rounded-lg bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 text-amber-700 dark:text-amber-300 text-xs">
                     <AlertTriangle className="w-3.5 h-3.5 shrink-0 text-amber-500" />
                     <span>
                       Note: Coordinates appear outside Qatar national territory (~24.4°N to 26.3°N, 50.6°E to 51.8°E). QND95 grid is calculated using official projection parameters.
@@ -1336,7 +1330,7 @@ export const ConverterSection: React.FC<ConverterSectionProps> = ({
                 )}
 
                 {/* Action Buttons for Result 1 */}
-                <div className="flex flex-wrap items-center gap-2 pt-0.5">
+                <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
                   {wgsConvertedInput && (
                     <button
                       type="button"
@@ -1346,7 +1340,7 @@ export const ConverterSection: React.FC<ConverterSectionProps> = ({
                           wgsConvertedInput.lng
                         )
                       }
-                      className="flex-1 min-w-[130px] h-8 flex items-center justify-center gap-1.5 px-2.5 rounded-lg bg-blue-50 dark:bg-blue-950/40 hover:bg-blue-100 dark:hover:bg-blue-900/50 text-blue-700 dark:text-blue-300 text-xs font-semibold border border-blue-200 dark:border-blue-800 transition-colors cursor-pointer"
+                      className="flex-1 min-w-[120px] h-7.5 sm:h-8 flex items-center justify-center gap-1 px-2 rounded-lg bg-blue-50 dark:bg-blue-950/40 hover:bg-blue-100 dark:hover:bg-blue-900/50 text-blue-700 dark:text-blue-300 text-xs font-semibold border border-blue-200 dark:border-blue-800 transition-colors cursor-pointer"
                     >
                       <MapPin className="w-3 h-3 text-blue-500" />
                       <span>View on Map</span>
@@ -1355,7 +1349,7 @@ export const ConverterSection: React.FC<ConverterSectionProps> = ({
                   <button
                     type="button"
                     onClick={transferQndOutputToInput}
-                    className="flex-1 min-w-[130px] h-8 flex items-center justify-center gap-1.5 px-2.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-750 text-slate-700 dark:text-slate-300 text-xs font-medium border border-slate-200 dark:border-slate-700 transition-colors cursor-pointer"
+                    className="flex-1 min-w-[120px] h-7.5 sm:h-8 flex items-center justify-center gap-1 px-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-750 text-slate-700 dark:text-slate-300 text-xs font-medium border border-slate-200 dark:border-slate-700 transition-colors cursor-pointer"
                   >
                     <ArrowUpDown className="w-3 h-3 text-slate-500" />
                     <span>Switch to QND95 → WGS84</span>
@@ -1365,10 +1359,10 @@ export const ConverterSection: React.FC<ConverterSectionProps> = ({
             )}
           </div>
         ) : (
-          <div className="p-3.5 sm:p-4 space-y-2.5">
+          <div className="p-2.5 sm:p-3.5 space-y-2">
             {/* Header row with Reset */}
             <div className="flex items-center justify-between pb-0.5">
-              <span className="text-[11px] font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+              <span className="text-[10.5px] font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
                 Enter Grid Values (Meters)
               </span>
               <button
@@ -1380,7 +1374,7 @@ export const ConverterSection: React.FC<ConverterSectionProps> = ({
                   setQndToWgsError(null);
                 }}
                 title="Clear input"
-                className="flex items-center gap-1 text-xs text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 cursor-pointer"
+                className="flex items-center gap-1 text-[11px] text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 cursor-pointer"
               >
                 <RotateCcw className="w-3 h-3" />
                 <span>Clear</span>
@@ -1388,12 +1382,12 @@ export const ConverterSection: React.FC<ConverterSectionProps> = ({
             </div>
 
             {/* Inputs */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {/* Easting Input */}
-              <div className="space-y-1">
-                <label className="flex items-center justify-between text-xs font-medium text-slate-700 dark:text-slate-300">
+              <div className="space-y-0.5">
+                <label className="flex items-center justify-between text-[11px] sm:text-xs font-medium text-slate-700 dark:text-slate-300">
                   <span>Easting / X (meters)</span>
-                  <span className="text-[10.5px] text-slate-400 font-mono">e.g. 231735.610</span>
+                  <span className="text-[10px] text-slate-400 font-mono">e.g. 231735.610</span>
                 </label>
                 <div className="relative">
                   <input
@@ -1403,19 +1397,19 @@ export const ConverterSection: React.FC<ConverterSectionProps> = ({
                     value={qndEastingInput}
                     onChange={(e) => setQndEastingInput(e.target.value)}
                     placeholder="231735.610"
-                    className="w-full h-9 px-3 text-xs sm:text-sm font-mono font-medium rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition-all"
+                    className="w-full h-8 sm:h-8.5 px-2.5 text-xs font-mono font-medium rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition-all"
                   />
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400 font-mono">
+                  <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-slate-400 font-mono">
                     m
                   </span>
                 </div>
               </div>
 
               {/* Northing Input */}
-              <div className="space-y-1">
-                <label className="flex items-center justify-between text-xs font-medium text-slate-700 dark:text-slate-300">
+              <div className="space-y-0.5">
+                <label className="flex items-center justify-between text-[11px] sm:text-xs font-medium text-slate-700 dark:text-slate-300">
                   <span>Northing / Y (meters)</span>
-                  <span className="text-[10.5px] text-slate-400 font-mono">e.g. 392498.417</span>
+                  <span className="text-[10px] text-slate-400 font-mono">e.g. 392498.417</span>
                 </label>
                 <div className="relative">
                   <input
@@ -1425,9 +1419,9 @@ export const ConverterSection: React.FC<ConverterSectionProps> = ({
                     value={qndNorthingInput}
                     onChange={(e) => setQndNorthingInput(e.target.value)}
                     placeholder="392498.417"
-                    className="w-full h-9 px-3 text-xs sm:text-sm font-mono font-medium rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition-all"
+                    className="w-full h-8 sm:h-8.5 px-2.5 text-xs font-mono font-medium rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition-all"
                   />
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400 font-mono">
+                  <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-slate-400 font-mono">
                     m
                   </span>
                 </div>
@@ -1436,7 +1430,7 @@ export const ConverterSection: React.FC<ConverterSectionProps> = ({
 
             {/* Error Message 2 */}
             {qndToWgsError && (
-              <div className="flex items-center gap-1.5 p-2 rounded-lg bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900 text-rose-700 dark:text-rose-300 text-xs">
+              <div className="flex items-center gap-1.5 p-1.5 rounded-lg bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900 text-rose-700 dark:text-rose-300 text-xs">
                 <AlertTriangle className="w-3.5 h-3.5 shrink-0 text-rose-500" />
                 <span>{qndToWgsError}</span>
               </div>
@@ -1447,19 +1441,19 @@ export const ConverterSection: React.FC<ConverterSectionProps> = ({
               <button
                 type="button"
                 onClick={handleConvertQndToWgs}
-                className="w-full h-10 flex items-center justify-center gap-1.5 px-3 rounded-lg bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-semibold text-xs sm:text-sm shadow-2xs transition-all cursor-pointer active:scale-[0.99]"
+                className="w-full h-8.5 sm:h-9 flex items-center justify-center gap-1.5 px-3 rounded-lg bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-semibold text-xs sm:text-sm shadow-2xs transition-all cursor-pointer active:scale-[0.99]"
               >
-                <Layers className="w-4 h-4" />
+                <Layers className="w-3.5 h-3.5" />
                 <span>Convert to WGS84 (DD & DMS)</span>
               </button>
             </div>
 
             {/* Separate Output Display 2 */}
             {wgsOutput && (
-              <div className="mt-2.5 p-3 rounded-xl bg-slate-50 dark:bg-slate-850 border border-slate-200 dark:border-slate-750 space-y-2">
+              <div className="mt-2 p-2.5 sm:p-3 rounded-xl bg-slate-50 dark:bg-slate-850 border border-slate-200 dark:border-slate-750 space-y-1.5 sm:space-y-2">
                 <div className="flex items-center justify-between pb-1 border-b border-slate-200/80 dark:border-slate-700/80">
-                  <span className="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300 flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block"></span>
+                  <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300 flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block"></span>
                     WGS84 Coordinates Result (EPSG:4326)
                   </span>
                   <button
@@ -1470,7 +1464,7 @@ export const ConverterSection: React.FC<ConverterSectionProps> = ({
                         'wgs-all'
                       )
                     }
-                    className="flex items-center gap-1 text-xs font-medium text-emerald-600 dark:text-emerald-400 hover:underline cursor-pointer"
+                    className="flex items-center gap-1 text-[11px] font-medium text-emerald-600 dark:text-emerald-400 hover:underline cursor-pointer"
                   >
                     {copiedKey === 'wgs-all' ? (
                       <>
@@ -1487,8 +1481,8 @@ export const ConverterSection: React.FC<ConverterSectionProps> = ({
                 </div>
 
                 {/* Display Format 1: Decimal Degrees (DD) */}
-                <div className="p-2.5 bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 space-y-1.5">
-                  <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
+                <div className="p-2 sm:p-2.5 bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 space-y-1">
+                  <div className="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400">
                     <span className="font-semibold text-slate-700 dark:text-slate-300">
                       Decimal Degrees (DD)
                     </span>
@@ -1510,15 +1504,15 @@ export const ConverterSection: React.FC<ConverterSectionProps> = ({
                       <span>Copy DD</span>
                     </button>
                   </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs sm:text-sm font-mono font-bold text-slate-900 dark:text-slate-100">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-xs sm:text-sm font-mono font-bold text-slate-900 dark:text-slate-100">
                     <div className="p-1.5 rounded bg-slate-50 dark:bg-slate-800">
-                      <span className="text-[10px] font-medium text-slate-400 block font-sans">
+                      <span className="text-[9.5px] font-medium text-slate-400 block font-sans">
                         Latitude
                       </span>
                       {wgsOutput.dd.lat.toFixed(6)}°
                     </div>
                     <div className="p-1.5 rounded bg-slate-50 dark:bg-slate-800">
-                      <span className="text-[10px] font-medium text-slate-400 block font-sans">
+                      <span className="text-[9.5px] font-medium text-slate-400 block font-sans">
                         Longitude
                       </span>
                       {wgsOutput.dd.lng.toFixed(6)}°
@@ -1527,8 +1521,8 @@ export const ConverterSection: React.FC<ConverterSectionProps> = ({
                 </div>
 
                 {/* Display Format 2: Degrees, Minutes, Seconds (DMS) */}
-                <div className="p-2.5 bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 space-y-1.5">
-                  <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
+                <div className="p-2 sm:p-2.5 bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 space-y-1">
+                  <div className="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400">
                     <span className="font-semibold text-slate-700 dark:text-slate-300">
                       Degrees, Minutes, Seconds (DMS)
                     </span>
@@ -1547,15 +1541,15 @@ export const ConverterSection: React.FC<ConverterSectionProps> = ({
                       <span>Copy DMS</span>
                     </button>
                   </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs sm:text-sm font-mono font-bold text-slate-900 dark:text-slate-100">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-xs sm:text-sm font-mono font-bold text-slate-900 dark:text-slate-100">
                     <div className="p-1.5 rounded bg-slate-50 dark:bg-slate-800">
-                      <span className="text-[10px] font-medium text-slate-400 block font-sans">
+                      <span className="text-[9.5px] font-medium text-slate-400 block font-sans">
                         Latitude DMS
                       </span>
                       {wgsOutput.dms.formattedLat}
                     </div>
                     <div className="p-1.5 rounded bg-slate-50 dark:bg-slate-800">
-                      <span className="text-[10px] font-medium text-slate-400 block font-sans">
+                      <span className="text-[9.5px] font-medium text-slate-400 block font-sans">
                         Longitude DMS
                       </span>
                       {wgsOutput.dms.formattedLng}
@@ -1568,7 +1562,7 @@ export const ConverterSection: React.FC<ConverterSectionProps> = ({
                   parseFloat(qndEastingInput),
                   parseFloat(qndNorthingInput)
                 ) && (
-                  <div className="flex items-center gap-1.5 p-2 rounded-lg bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 text-amber-700 dark:text-amber-300 text-xs">
+                  <div className="flex items-center gap-1.5 p-1.5 rounded-lg bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 text-amber-700 dark:text-amber-300 text-xs">
                     <AlertTriangle className="w-3.5 h-3.5 shrink-0 text-amber-500" />
                     <span>
                       Note: Easting/Northing falls outside standard Qatar land bounds (E: ~135,000–265,000m, N: ~295,000–505,000m).
@@ -1577,7 +1571,7 @@ export const ConverterSection: React.FC<ConverterSectionProps> = ({
                 )}
 
                 {/* Action Buttons for Result 2 */}
-                <div className="flex flex-wrap items-center gap-2 pt-0.5">
+                <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
                   <button
                     type="button"
                     onClick={() =>
@@ -1586,7 +1580,7 @@ export const ConverterSection: React.FC<ConverterSectionProps> = ({
                         wgsOutput.dd.lng
                       )
                     }
-                    className="flex-1 min-w-[130px] h-8 flex items-center justify-center gap-1.5 px-2.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300 text-xs font-semibold border border-emerald-200 dark:border-emerald-800 transition-colors cursor-pointer"
+                    className="flex-1 min-w-[120px] h-7.5 sm:h-8 flex items-center justify-center gap-1 px-2 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300 text-xs font-semibold border border-emerald-200 dark:border-emerald-800 transition-colors cursor-pointer"
                   >
                     <MapPin className="w-3 h-3 text-emerald-500" />
                     <span>View on Map</span>
@@ -1594,7 +1588,7 @@ export const ConverterSection: React.FC<ConverterSectionProps> = ({
                   <button
                     type="button"
                     onClick={transferWgsOutputToInput}
-                    className="flex-1 min-w-[130px] h-8 flex items-center justify-center gap-1.5 px-2.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-750 text-slate-700 dark:text-slate-300 text-xs font-medium border border-slate-200 dark:border-slate-700 transition-colors cursor-pointer"
+                    className="flex-1 min-w-[120px] h-7.5 sm:h-8 flex items-center justify-center gap-1 px-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-750 text-slate-700 dark:text-slate-300 text-xs font-medium border border-slate-200 dark:border-slate-700 transition-colors cursor-pointer"
                   >
                     <ArrowUpDown className="w-3 h-3 text-slate-500" />
                     <span>Switch to WGS84 → QND95</span>

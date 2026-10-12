@@ -41,15 +41,15 @@ export const DmsInput: React.FC<DmsInputProps> = ({
   };
 
   return (
-    <div className="space-y-1">
-      <div className="flex items-center justify-between text-xs font-medium text-slate-700 dark:text-slate-300">
+    <div className="space-y-0.5">
+      <div className="flex items-center justify-between text-[11px] sm:text-xs font-medium text-slate-700 dark:text-slate-300">
         <span>{label}</span>
-        <span className="text-[11px] text-slate-400 dark:text-slate-500 font-mono">
+        <span className="text-[10px] text-slate-400 dark:text-slate-500 font-mono">
           {isLat ? '0° - 90°' : '0° - 180°'}
         </span>
       </div>
 
-      <div className="grid grid-cols-4 gap-1.5">
+      <div className="grid grid-cols-4 gap-1 sm:gap-1.5">
         {/* Degrees */}
         <div className="relative">
           <input
@@ -60,9 +60,9 @@ export const DmsInput: React.FC<DmsInputProps> = ({
             value={value.deg || ''}
             onChange={handleDegChange}
             placeholder="0"
-            className="w-full h-9 pl-2 pr-4 text-xs sm:text-sm font-mono font-medium rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all text-center"
+            className="w-full h-8 sm:h-8.5 pl-1.5 pr-3.5 text-xs font-mono font-medium rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all text-center"
           />
-          <span className="absolute right-1.5 top-1/2 -translate-y-1/2 text-xs font-semibold text-slate-400 pointer-events-none">
+          <span className="absolute right-1 top-1/2 -translate-y-1/2 text-[11px] font-semibold text-slate-400 pointer-events-none">
             °
           </span>
         </div>
@@ -77,9 +77,9 @@ export const DmsInput: React.FC<DmsInputProps> = ({
             value={value.min || ''}
             onChange={handleMinChange}
             placeholder="0"
-            className="w-full h-9 pl-2 pr-4 text-xs sm:text-sm font-mono font-medium rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all text-center"
+            className="w-full h-8 sm:h-8.5 pl-1.5 pr-3.5 text-xs font-mono font-medium rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all text-center"
           />
-          <span className="absolute right-1.5 top-1/2 -translate-y-1/2 text-xs font-semibold text-slate-400 pointer-events-none">
+          <span className="absolute right-1 top-1/2 -translate-y-1/2 text-[11px] font-semibold text-slate-400 pointer-events-none">
             '
           </span>
         </div>
@@ -95,9 +95,9 @@ export const DmsInput: React.FC<DmsInputProps> = ({
             value={value.sec || ''}
             onChange={handleSecChange}
             placeholder="0.00"
-            className="w-full h-9 pl-1 pr-4 text-xs font-mono font-medium rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all text-center"
+            className="w-full h-8 sm:h-8.5 pl-1 pr-3 text-[11px] sm:text-xs font-mono font-medium rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all text-center"
           />
-          <span className="absolute right-1.5 top-1/2 -translate-y-1/2 text-xs font-semibold text-slate-400 pointer-events-none">
+          <span className="absolute right-1 top-1/2 -translate-y-1/2 text-[11px] font-semibold text-slate-400 pointer-events-none">
             "
           </span>
         </div>
@@ -108,7 +108,7 @@ export const DmsInput: React.FC<DmsInputProps> = ({
             type="button"
             onClick={toggleDirection}
             title={`Toggle ${isLat ? 'North/South' : 'East/West'}`}
-            className="w-full h-9 flex items-center justify-center text-xs sm:text-sm font-bold rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-750 text-blue-700 dark:text-blue-400 active:scale-95 transition-all cursor-pointer shadow-2xs"
+            className="w-full h-8 sm:h-8.5 flex items-center justify-center text-xs font-bold rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-750 text-blue-700 dark:text-blue-400 active:scale-95 transition-all cursor-pointer shadow-2xs"
           >
             {value.dir}
           </button>
